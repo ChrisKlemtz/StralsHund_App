@@ -21,7 +21,6 @@ StralsHund verbindet Hundebesitzer, hilft Gassi-Routen zu teilen, hundefreundlic
 - 💬 Social Feed
 - 🌦️ Wetter-Integration
 - ⭐ Premium-Features
-- Und vieles mehr...
 
 ---
 
@@ -32,27 +31,31 @@ StralsHund/
 ├── backend/              # Node.js Backend API
 │   ├── src/
 │   │   ├── config/      # Datenbank & Config
-│   │   ├── models/      # Mongoose Models
+│   │   ├── models/      # Mongoose Models (User, DogSpot, Route, Meetup)
 │   │   ├── routes/      # API Routes
 │   │   ├── controllers/ # Business Logic
-│   │   ├── middleware/  # Auth, Error Handling
-│   │   └── utils/       # Helper Functions
+│   │   ├── middleware/  # Auth (JWT), Error Handling
+│   │   └── utils/       # Logger, Token Generator
+│   ├── .env             # Environment Variables (erstellt aus .env.example)
 │   ├── Dockerfile
 │   └── package.json
 │
-├── mobile/              # React Native App
+├── mobile/              # React Native App (Expo)
 │   ├── src/
-│   │   ├── components/  # Reusable UI Components
-│   │   ├── screens/     # App Screens
-│   │   ├── navigation/  # Navigation Setup
-│   │   ├── theme/       # Design System
-│   │   ├── store/       # State Management (Zustand)
-│   │   └── api/         # API Client
+│   │   ├── components/  # UI Components (Button, Input, Card)
+│   │   ├── screens/     # App Screens (Auth, Main)
+│   │   │   ├── auth/   # Onboarding, Login, Register
+│   │   │   └── main/   # Home, Explore, Meetups, Messages, Profile
+│   │   ├── navigation/  # React Navigation Setup
+│   │   ├── theme/       # Design System (Colors, Typography, Spacing)
+│   │   ├── store/       # Zustand State Management
+│   │   └── api/         # API Config & Axios Client
 │   ├── App.js
+│   ├── app.json
 │   └── package.json
 │
-├── admin/               # Web Admin Dashboard (Coming Soon)
-├── docker-compose.yml   # Docker Setup
+├── docker-compose.yml   # MongoDB + Redis Setup
+├── SETUP.md            # Detaillierte Setup-Anleitung
 └── README.md
 ```
 
@@ -60,112 +63,144 @@ StralsHund/
 
 ## 🚀 Schnellstart
 
+> **Tipp:** Für eine detaillierte Schritt-für-Schritt-Anleitung, siehe [SETUP.md](SETUP.md)
+
 ### Voraussetzungen
 
-- **Node.js** >= 18.0.0
-- **npm** oder **yarn**
-- **Docker** & **Docker Compose** (empfohlen)
-- **Expo CLI** für Mobile-Entwicklung
-- **MongoDB** (läuft über Docker)
+- **Node.js** >= 18.0.0 ✅
+- **Docker Desktop** (für MongoDB & Redis) ✅
+- **WSL2** (falls Windows)
+- **Expo Go App** auf Smartphone (iOS/Android)
 
-### Installation
+### Installation in 5 Schritten
 
-#### 1. Repository klonen
+#### 1️⃣ Docker Desktop installieren & starten
+
+Download: https://www.docker.com/products/docker-desktop/
+
+**Wichtig:** Warte bis Docker läuft (grüner "Engine running" Status)
+
+#### 2️⃣ MongoDB & Redis starten
+
 ```bash
-cd StralsHund
-```
-
-#### 2. Dependencies installieren
-```bash
-npm run install-all
-```
-
-Oder manuell:
-```bash
-# Backend
-cd backend && npm install
-
-# Mobile
-cd ../mobile && npm install
-```
-
-#### 3. Environment Variables
-```bash
-# Backend
-cd backend
-cp .env.example .env
-# Bearbeite .env mit deinen Credentials
-```
-
-#### 4. Datenbank starten (Docker)
-```bash
-# Im Root-Verzeichnis
 docker-compose up -d mongodb redis
 ```
 
-#### 5. Backend starten
+Prüfen:
+```bash
+docker-compose ps
+# Sollte zeigen: stralshund-mongodb (Up), stralshund-redis (Up)
+```
+
+#### 3️⃣ Backend Dependencies & Start
+
 ```bash
 cd backend
+npm install
 npm run dev
 ```
 
-Backend läuft jetzt auf [http://localhost:5000](http://localhost:5000)
+✅ Backend läuft auf: **http://localhost:5000**
+✅ Test: http://localhost:5000/health
 
-#### 6. Mobile App starten
+#### 4️⃣ Mobile App Dependencies installieren
+
 ```bash
 cd mobile
+npm install --legacy-peer-deps
+```
+
+#### 5️⃣ Mobile App starten
+
+```bash
 npm start
 ```
 
-Scanne den QR-Code mit der **Expo Go App**:
-- iOS: [App Store](https://apps.apple.com/app/expo-go/id982107779)
-- Android: [Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
+**Dann:**
+- 📱 **Smartphone:** Scanne QR-Code mit [Expo Go App](https://expo.dev/client)
+- 🌐 **Browser:** Drücke `w` für Web-Version (http://localhost:19006)
 
 ---
 
-## 🐳 Docker Setup (Empfohlen)
+## 🐳 Docker Befehle
 
-### Alle Services starten
 ```bash
+# Alle Container starten
 docker-compose up -d
-```
 
-Das startet:
-- MongoDB auf Port `27017`
-- Redis auf Port `6379`
-- Backend API auf Port `5000`
+# Nur MongoDB & Redis
+docker-compose up -d mongodb redis
 
-### Services stoppen
-```bash
+# Container stoppen
 docker-compose down
+
+# Logs anzeigen
+docker-compose logs -f mongodb
 ```
 
-### Logs anzeigen
-```bash
-docker-compose logs -f backend
-```
+**Container:**
+- MongoDB: Port `27017` (User: `admin`, Password: `stralshund123`)
+- Redis: Port `6379`
+- Backend: Port `5000` (nur wenn via Docker gestartet)
 
 ---
 
-## 📱 Mobile App - Entwicklung
+## 📱 Mobile App - Testing Optionen
 
-### iOS Simulator
+### Option 1: Web-Browser (Empfohlen für schnelles Testen)
 ```bash
 cd mobile
+npm start
+# Drücke 'w' im Terminal
+```
+Öffnet: http://localhost:19006
+
+### Option 2: Expo Go App (Echtes Mobile Feeling)
+1. **Installiere Expo Go:**
+   - iOS: https://apps.apple.com/app/expo-go/id982107779
+   - Android: https://play.google.com/store/apps/details?id=host.exp.exponent
+2. **Scanne QR-Code** aus dem Terminal
+3. App lädt auf deinem Smartphone
+
+### Option 3: iOS Simulator (macOS only)
+```bash
 npm run ios
 ```
 
-### Android Emulator
+### Option 4: Android Emulator (Android Studio required)
 ```bash
-cd mobile
 npm run android
 ```
 
-### Web (Entwicklung)
-```bash
-cd mobile
-npm run web
+---
+
+## ⚙️ Konfiguration
+
+### Backend Environment Variables
+
+Die `.env` Datei im Backend ist bereits vorkonfiguriert. Wichtigste Werte:
+
+```env
+# Datenbank
+MONGODB_URI=mongodb://admin:stralshund123@localhost:27017/stralshund?authSource=admin
+
+# JWT Secrets (IN PRODUKTION ÄNDERN!)
+JWT_SECRET=super-secret-jwt-key-change-in-production-12345
+JWT_REFRESH_SECRET=super-refresh-token-secret-67890
+
+# Server
+PORT=5000
+NODE_ENV=development
 ```
+
+### Mobile App API Config
+
+Die App verbindet sich automatisch mit dem Backend:
+- **WSL/Physisches Gerät:** `http://172.29.40.113:5000/api/v1`
+- **Android Emulator:** `http://10.0.2.2:5000/api/v1`
+- **Web/iOS:** `http://localhost:5000/api/v1`
+
+Config-Datei: [mobile/src/api/config.js](mobile/src/api/config.js)
 
 ---
 
@@ -174,15 +209,22 @@ npm run web
 Das komplette Design System findest du in [mobile/design-system.md](mobile/design-system.md).
 
 ### Farbpalette
-- **Primary:** Orange (`#FF7A00`) - Energetisch, freundlich
-- **Secondary:** Blau (`#0085FF`) - Vertrauenswürdig
-- **Accent Colors:** Grün (Success), Rot (Danger), Gelb (Premium)
+- **Primary:** `#FF7A00` (Energetic Orange) - Freundlich, warm, aktiv
+- **Secondary:** `#0085FF` (Trustworthy Blue) - Vertrauen, Sicherheit
+- **Success:** `#10B981` (Green)
+- **Error:** `#EF4444` (Red)
+- **Warning:** `#F59E0B` (Yellow)
 
-### Komponenten
-- Alle UI-Komponenten in `/mobile/src/components/`
-- Vordefinierte Buttons, Inputs, Cards, etc.
-- Konsistentes Spacing (8pt Grid)
-- Moderne Shadows & Elevations
+### UI Komponenten
+Alle in `/mobile/src/components/`:
+- **Button** - Primary, Secondary, Ghost, Danger Varianten
+- **Input** - Mit Icons, Password Toggle, Validation
+- **Card** - Verschiedene Elevations
+
+### Typography
+- **Font:** Inter (modern, clean)
+- **Sizes:** 12px - 48px
+- **Weights:** Light bis Extrabold
 
 ---
 
@@ -195,53 +237,40 @@ http://localhost:5000/api/v1
 
 ### Authentication
 ```
-POST   /auth/register      # Registrierung
-POST   /auth/login         # Login
-POST   /auth/logout        # Logout
-POST   /auth/refresh-token # Token erneuern
-GET    /auth/me            # Aktueller User
+POST   /auth/register          # Neue User registrieren
+POST   /auth/login             # Login
+POST   /auth/logout            # Logout (benötigt Token)
+POST   /auth/refresh-token     # Access Token erneuern
+POST   /auth/forgot-password   # Passwort vergessen
+POST   /auth/reset-password/:token  # Passwort zurücksetzen
+GET    /auth/me                # Aktueller User (benötigt Token)
 ```
 
-### Users
+### Users (Coming Soon)
 ```
-GET    /users/me           # Eigenes Profil
-PUT    /users/me           # Profil aktualisieren
-```
-
-### Routes (Gassi-Routen)
-```
-GET    /routes             # Alle Routen
-POST   /routes             # Route erstellen
+GET    /users/me               # Eigenes Profil
+PUT    /users/me               # Profil aktualisieren
+POST   /users/me/dogs          # Hund hinzufügen
 ```
 
-### Dog Spots (Private Treffplätze)
+### Routes (Coming Soon)
 ```
-GET    /dog-spots          # Alle Spots
-POST   /dog-spots          # Spot erstellen
-```
-
-### Meetups
-```
-GET    /meetups            # Alle Meetups
-POST   /meetups            # Meetup erstellen
+GET    /routes                 # Alle Routen
+POST   /routes                 # Route erstellen
+GET    /routes/:id             # Route Details
 ```
 
-Vollständige API-Dokumentation: Coming soon (Swagger)
-
----
-
-## 🧪 Testing
-
-### Backend Tests
-```bash
-cd backend
-npm test
+### Dog Spots (Coming Soon)
+```
+GET    /dog-spots              # Alle Spots
+POST   /dog-spots              # Spot erstellen
+GET    /dog-spots/:id          # Spot Details
 ```
 
-### Mobile Tests
-```bash
-cd mobile
-npm test
+### Meetups (Coming Soon)
+```
+GET    /meetups                # Alle Meetups
+POST   /meetups                # Meetup erstellen
 ```
 
 ---
@@ -250,80 +279,165 @@ npm test
 
 ### Backend
 - **Runtime:** Node.js 18+
-- **Framework:** Express.js
-- **Datenbank:** MongoDB mit Mongoose
-- **Caching:** Redis
-- **Auth:** JWT + OAuth2 (Google, Apple, Facebook)
-- **File Upload:** Cloudinary/AWS S3
-- **Payment:** Stripe
+- **Framework:** Express.js 4.x
+- **Datenbank:** MongoDB 7.0 mit Mongoose ODM
+- **Caching:** Redis 7
+- **Auth:** JWT (Access + Refresh Tokens)
+- **Logging:** Winston
+- **Security:** Helmet, CORS, bcrypt, Rate Limiting
 
-### Mobile
-- **Framework:** React Native (Expo)
-- **Navigation:** React Navigation
+### Mobile App
+- **Framework:** React Native 0.73 (Expo 50)
+- **Navigation:** React Navigation 6
 - **State Management:** Zustand
 - **API Client:** Axios + React Query
-- **Maps:** React Native Maps
-- **UI:** Custom Components + Lucide Icons
+- **UI:** Custom Design System
+- **Icons:** Lucide React Native
+- **Maps:** React Native Maps (planned)
 
 ### DevOps
 - **Container:** Docker & Docker Compose
-- **Hosting:** TBD (AWS/DigitalOcean/Railway)
-- **CI/CD:** GitHub Actions
+- **Version Control:** Git
+- **Package Manager:** npm
 
 ---
 
-## 🤝 Mitwirken
+## 🧪 Testing
 
-Dieses Projekt befindet sich noch in der Entwicklung. Contributions sind willkommen!
+```bash
+# Backend Tests (Coming Soon)
+cd backend
+npm test
 
-### Development Workflow
-1. Feature Branch erstellen: `git checkout -b feature/dein-feature`
-2. Änderungen committen: `git commit -m "Add: Dein Feature"`
-3. Push to Branch: `git push origin feature/dein-feature`
-4. Pull Request erstellen
-
----
-
-## 📄 Lizenz
-
-MIT License - Siehe [LICENSE](LICENSE) für Details
+# Mobile Tests (Coming Soon)
+cd mobile
+npm test
+```
 
 ---
 
-## 📞 Kontakt
+## 🐛 Troubleshooting
 
-**StralsHund Team**
-- Website: Coming soon
-- Email: info@stralshund.de
-- GitHub: [github.com/yourusername/stralshund](https://github.com/yourusername/stralshund)
+### Backend startet nicht
+```bash
+# Prüfe ob MongoDB läuft
+docker-compose ps
+
+# MongoDB neu starten
+docker-compose restart mongodb
+
+# Logs checken
+docker-compose logs mongodb
+```
+
+### Mobile App: "Request Timeout"
+
+**Für WSL + Physisches Gerät:**
+1. Finde WSL IP: `hostname -I | awk '{print $1}'`
+2. Aktualisiere `mobile/src/api/config.js` mit deiner IP
+3. Öffne Windows Firewall für Port 5000:
+   ```powershell
+   # In PowerShell als Administrator:
+   New-NetFirewallRule -DisplayName "WSL Node Backend" -Direction Inbound -LocalPort 5000 -Protocol TCP -Action Allow
+   ```
+
+**Alternative:** Nutze Expo Tunnel-Modus:
+```bash
+npx expo start --tunnel
+```
+
+### "Port already in use"
+```bash
+# Backend Port ändern
+# In backend/.env: PORT=5001
+
+# Expo Port ändern
+npx expo start --port 19001
+```
 
 ---
 
 ## 🗺️ Roadmap
 
-### ✅ Phase 1 - MVP (Q1 2024)
-- [x] Backend Setup
-- [x] Datenbank Models
-- [x] Auth System
+### ✅ Phase 1 - MVP Setup (Abgeschlossen!)
+- [x] Backend Setup mit Express & MongoDB
+- [x] Datenbank Models (User, DogSpot, Route, Meetup)
+- [x] JWT Authentication System
 - [x] Mobile App Grundstruktur
-- [x] Design System
-- [ ] Gassi-Routen Feature
-- [ ] Dog Spots Feature
-- [ ] Meetups Feature
+- [x] Modernes Design System
+- [x] Onboarding & Auth Screens
+- [x] Navigation (5 Tabs)
+- [x] Docker Setup
 
-### 📋 Phase 2 - Core Features (Q2 2024)
-- [ ] Activity Tracking
+### 📋 Phase 2 - Core Features (In Arbeit)
+- [ ] **Gassi-Routen Feature**
+  - [ ] Routen erstellen & speichern
+  - [ ] Karten-Integration
+  - [ ] Route bewerten & kommentieren
+- [ ] **Dog Spots Feature**
+  - [ ] Spot erstellen als Gastgeber
+  - [ ] Spot buchen als Besucher
+  - [ ] Buchungs-Kalender
+  - [ ] Bezahl-Integration (Stripe)
+- [ ] **Meetups Feature**
+  - [ ] Meetup erstellen
+  - [ ] Teilnehmer-Management
+  - [ ] Chat-Funktion
+
+### 🚀 Phase 3 - Advanced Features
+- [ ] Activity Tracking & Statistiken
 - [ ] Social Feed
 - [ ] Lost & Found System
 - [ ] Wetter-Integration
 - [ ] Push Notifications
-
-### 🚀 Phase 3 - Growth (Q3 2024)
 - [ ] Premium Features
-- [ ] Gamification
+
+### 🌍 Phase 4 - Growth
 - [ ] Admin Dashboard
-- [ ] Payment Integration
 - [ ] Multi-Stadt Support
+- [ ] Internationalisierung (i18n)
+- [ ] App Store Deployment
+
+---
+
+## 🤝 Mitwirken
+
+Contributions sind willkommen!
+
+### Development Workflow
+1. Fork das Repository
+2. Feature Branch erstellen: `git checkout -b feature/amazing-feature`
+3. Änderungen committen: `git commit -m 'Add amazing feature'`
+4. Push to Branch: `git push origin feature/amazing-feature`
+5. Pull Request erstellen
+
+---
+
+## 📄 Lizenz
+
+MIT License - siehe [LICENSE](LICENSE) für Details
+
+---
+
+## 📞 Kontakt & Support
+
+- **Projekt:** StralsHund - Community App für Hundebesitzer
+- **Dokumentation:** [SETUP.md](SETUP.md) für detaillierte Setup-Anleitung
+- **Design:** [mobile/design-system.md](mobile/design-system.md)
+
+---
+
+## 💡 Nächste Schritte
+
+Nach dem erfolgreichen Setup:
+
+1. **Teste die App** - Registriere einen Test-Account
+2. **Erkunde den Code** - Sieh dir die Struktur an
+3. **Design anpassen** - Farben in `mobile/src/theme/colors.js`
+4. **Features bauen** - Starte mit Routes oder Dog Spots
+5. **API testen** - Nutze Postman oder curl
+
+**Viel Erfolg mit StralsHund! 🐕**
 
 ---
 

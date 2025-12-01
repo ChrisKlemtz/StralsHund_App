@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mail, Lock, User } from 'lucide-react-native';
@@ -14,6 +15,7 @@ import { Mail, Lock, User } from 'lucide-react-native';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { colors, spacing, typography, iconSize } from '../../theme';
+import authApi from '../../api/auth';
 
 export default function RegisterScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -27,7 +29,6 @@ export default function RegisterScreen({ navigation }) {
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: null }));
     }
@@ -68,17 +69,33 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.post('/auth/register', formData);
+      const response = await authApi.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
 
-      // Mock success
-      setTimeout(() => {
-        setLoading(false);
-        navigation.navigate('Login');
-      }, 1000);
+      console.log('Registration successful:', response);
+      setLoading(false);
+
+      Alert.alert(
+        'Erfolgreich registriert!',
+        'Dein Account wurde erstellt. Du kannst dich jetzt anmelden.',
+        [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
+      );
     } catch (error) {
       setLoading(false);
-      setErrors({ general: 'Registrierung fehlgeschlagen. Bitte versuche es erneut.' });
+      console.error('Registration error:', error);
+
+      let errorMessage = 'Registrierung fehlgeschlagen. Bitte versuche es erneut.';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.errors) {
+        const firstError = Object.values(error.errors)[0];
+        errorMessage = firstError;
+      }
+
+      setErrors({ general: errorMessage });
     }
   };
 
@@ -93,14 +110,12 @@ export default function RegisterScreen({ navigation }) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
           <View style={styles.header}>
             <Text style={styles.emoji}>🐾</Text>
             <Text style={styles.title}>Account erstellen</Text>
             <Text style={styles.subtitle}>Werde Teil der Community</Text>
           </View>
 
-          {/* Form */}
           <View style={styles.form}>
             <Input
               label="Benutzername"
@@ -163,7 +178,6 @@ export default function RegisterScreen({ navigation }) {
             </Text>
           </View>
 
-          {/* Login Link */}
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>Bereits registriert? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>

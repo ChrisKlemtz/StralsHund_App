@@ -15,6 +15,7 @@ import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { colors, spacing, typography, iconSize } from '../../theme';
 import { useAuthStore } from '../../store/authStore';
+import authApi from '../../api/auth';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -49,22 +50,24 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.post('/auth/login', { email, password });
-      // await setAuth(response.data);
-
-      // Mock success for now
-      setTimeout(async () => {
-        await setAuth({
-          user: { email, username: 'testuser' },
-          accessToken: 'mock-token',
-          refreshToken: 'mock-refresh-token',
-        });
-        setLoading(false);
-      }, 1000);
+      const response = await authApi.login(email, password);
+      console.log('Login successful:', response);
+      
+      const { accessToken, refreshToken, user } = response.data;
+      await setAuth({ user, accessToken, refreshToken });
+      
+      setLoading(false);
+      // Navigation is handled automatically by RootNavigator
     } catch (error) {
       setLoading(false);
-      setErrors({ general: 'Login fehlgeschlagen. Bitte versuche es erneut.' });
+      console.error('Login error:', error);
+      
+      let errorMessage = 'Login fehlgeschlagen. Bitte versuche es erneut.';
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setErrors({ general: errorMessage });
     }
   };
 
