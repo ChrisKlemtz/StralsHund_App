@@ -4,10 +4,8 @@
     "slug": "stralshund",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#FF7A00"
     },
@@ -25,10 +23,6 @@
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FF7A00"
-      },
       "package": "com.stralshund.app",
       "permissions": [
         "ACCESS_FINE_LOCATION",
@@ -39,11 +33,9 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-location",
         {
