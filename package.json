@@ -1,0 +1,26 @@
+{
+  "name": "stralshund-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-all": "npm run install:backend && npm run install:mobile",
+    "install:backend": "cd backend && npm install",
+    "install:mobile": "cd mobile && npm install --legacy-peer-deps",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:mobile\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:mobile": "cd mobile && npm start",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "description": "StralsHund - Community App für Hundebesitzer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/stralshund"
+  },
+  "author": "StralsHund Team",
+  "license": "MIT"
+}

@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "StralsHund",
+    "slug": "stralshund",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF7A00"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.stralshund.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "StralsHund needs your location to show nearby dog spots and routes.",
+        "NSLocationAlwaysUsageDescription": "StralsHund needs your location to track walking routes.",
+        "NSCameraUsageDescription": "StralsHund needs camera access to upload photos of your dog and places.",
+        "NSPhotoLibraryUsageDescription": "StralsHund needs photo library access to select photos."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF7A00"
+      },
+      "package": "com.stralshund.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow StralsHund to use your location."
+        }
+      ]
+    ]
+  }
+}
