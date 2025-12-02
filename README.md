@@ -44,12 +44,15 @@ StralsHund/
 │   ├── src/
 │   │   ├── components/  # UI Components (Button, Input, Card)
 │   │   ├── screens/     # App Screens (Auth, Main)
-│   │   │   ├── auth/   # Onboarding, Login, Register
+│   │   │   ├── auth/   # Onboarding, Login, Register (✅ API Connected)
 │   │   │   └── main/   # Home, Explore, Meetups, Messages, Profile
 │   │   ├── navigation/  # React Navigation Setup
 │   │   ├── theme/       # Design System (Colors, Typography, Spacing)
 │   │   ├── store/       # Zustand State Management
-│   │   └── api/         # API Config & Axios Client
+│   │   └── api/         # API Client (Axios), Auth Service, Config
+│   │       ├── client.js  # Axios instance with token handling
+│   │       ├── auth.js    # Authentication API methods
+│   │       └── config.js  # Environment-based API URLs
 │   ├── App.js
 │   ├── app.json
 │   └── package.json
@@ -145,6 +148,41 @@ docker-compose logs -f mongodb
 
 ---
 
+## 🗄️ MongoDB Compass (Datenbank GUI)
+
+**MongoDB Compass** ist das offizielle GUI-Tool für MongoDB. Damit kannst du alle User, Routen, Dog Spots, etc. sehen.
+
+### Installation
+Download: https://www.mongodb.com/try/download/compass
+
+### Verbindung einrichten
+
+**Connection String (Windows):**
+```
+mongodb://admin:stralshund123@172.29.40.113:27017/stralshund?authSource=admin
+```
+
+**Oder Felder einzeln ausfüllen:**
+- Host: `172.29.40.113` (WSL IP - anpassen!)
+- Port: `27017`
+- Authentication: Username/Password
+- Username: `admin`
+- Password: `stralshund123`
+- Authentication Database: `admin`
+
+### Datenbank erkunden
+Nach dem Connect siehst du:
+- **Datenbank:** `stralshund`
+- **Collections:**
+  - `users` - Alle registrierten User
+  - `routes` - Gassi-Routen
+  - `dogspots` - Hundetreffplätze
+  - `meetups` - Community Meetups
+
+**Tipp:** Nach einer Registrierung in der App, klick auf "Refresh" in Compass um den neuen User zu sehen!
+
+---
+
 ## 📱 Mobile App - Testing Optionen
 
 ### Option 1: Web-Browser (Empfohlen für schnelles Testen)
@@ -195,10 +233,16 @@ NODE_ENV=development
 
 ### Mobile App API Config
 
-Die App verbindet sich automatisch mit dem Backend:
-- **WSL/Physisches Gerät:** `http://172.29.40.113:5000/api/v1`
-- **Android Emulator:** `http://10.0.2.2:5000/api/v1`
-- **Web/iOS:** `http://localhost:5000/api/v1`
+Die App verbindet sich **automatisch** mit dem richtigen Backend basierend auf der Plattform:
+
+| Plattform | API URL | Verwendung |
+|-----------|---------|------------|
+| **Web Browser** | `http://localhost:5000/api/v1` | Standard für lokales Testing |
+| **Android Emulator** | `http://10.0.2.2:5000/api/v1` | Spezielle Android Emulator IP |
+| **iOS Simulator** | `http://172.29.40.113:5000/api/v1` | WSL IP (anpassen!) |
+| **Physisches Gerät** | `http://172.29.40.113:5000/api/v1` | WSL IP (anpassen!) |
+
+**WSL IP finden:** `hostname -I | awk '{print $1}'`
 
 Config-Datei: [mobile/src/api/config.js](mobile/src/api/config.js)
 
@@ -235,7 +279,7 @@ Alle in `/mobile/src/components/`:
 http://localhost:5000/api/v1
 ```
 
-### Authentication
+### Authentication ✅ (Funktioniert!)
 ```
 POST   /auth/register          # Neue User registrieren
 POST   /auth/login             # Login
@@ -245,6 +289,8 @@ POST   /auth/forgot-password   # Passwort vergessen
 POST   /auth/reset-password/:token  # Passwort zurücksetzen
 GET    /auth/me                # Aktueller User (benötigt Token)
 ```
+
+**Test:** Registriere einen Account in der App und sieh den neuen User in MongoDB Compass!
 
 ### Users (Coming Soon)
 ```
@@ -362,12 +408,14 @@ npx expo start --port 19001
 ### ✅ Phase 1 - MVP Setup (Abgeschlossen!)
 - [x] Backend Setup mit Express & MongoDB
 - [x] Datenbank Models (User, DogSpot, Route, Meetup)
-- [x] JWT Authentication System
+- [x] JWT Authentication System (vollständig funktionsfähig)
+- [x] API Client mit Axios & Token Management
 - [x] Mobile App Grundstruktur
 - [x] Modernes Design System
-- [x] Onboarding & Auth Screens
+- [x] Onboarding & Auth Screens (Register/Login mit Backend verbunden)
 - [x] Navigation (5 Tabs)
-- [x] Docker Setup
+- [x] Docker Setup (MongoDB + Redis)
+- [x] MongoDB Compass Integration
 
 ### 📋 Phase 2 - Core Features (In Arbeit)
 - [ ] **Gassi-Routen Feature**

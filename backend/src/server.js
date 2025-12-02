@@ -69,7 +69,13 @@ const server = app.listen(PORT, HOST, () => {
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   logger.error(`Unhandled Rejection: ${err.message}`);
-  server.close(() => process.exit(1));
+  if (process.env.NODE_ENV === 'development') {
+    logger.error('Development mode: Server continues running despite unhandled rejection');
+    logger.error(err.stack);
+  } else {
+    // In production, gracefully shut down
+    server.close(() => process.exit(1));
+  }
 });
 
 // Handle SIGTERM

@@ -10,6 +10,11 @@ exports.register = async (req, res, next) => {
   try {
     const { email, password, username, firstName, lastName } = req.body;
 
+    // Validate required fields
+    if (!email || !password || !username) {
+      return next(new AppError('Please provide email, password, and username', 400));
+    }
+
     // Check if user exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
